@@ -1,16 +1,39 @@
-# React + Vite
+# Hospital Booking Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a React + Vite hospital appointment booking web app.
 
-Currently, two official plugins are available:
+## Group Members
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- James
+- Monique
+- Myles
+- Allan
 
-## React Compiler
+## Description
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+A simple healthcare booking interface that lets users:
+- view available doctors
+- book appointments
+- register and login
+- store booking data locally and via a mock API
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the mock API server:
+   ```bash
+   npm run serve:api
+   ```
+3. Start the frontend app:
+   ```bash
+   npm run dev
+   ```
+4. Open the app in your browser at `http://localhost:5173`
+
+## Notes
+
+- The app uses `localStorage` for booking persistence and authentication storage.
+- The mock backend is served by `json-server` on port `3001`.
