@@ -21,8 +21,8 @@ function Navbar() {
             Doctors
           </Link>
 
-          <Link to="/appointment" className="hover:text-blue-600 transition">
-            Appointments
+          <Link to="/appointments" className="hover:text-blue-600 transition">
+            My Bookings
           </Link>
 
           <Link to="/login" className="hover:text-blue-600 transition">
