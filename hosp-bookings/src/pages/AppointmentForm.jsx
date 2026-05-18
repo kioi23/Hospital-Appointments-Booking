@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 function AppointmentForm() {
   const [appointment, setAppointment] = useState({
@@ -17,6 +18,30 @@ function AppointmentForm() {
     },
   ];
 
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!id) return;
+
+    const storedBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+    const existingBooking = storedBookings.find((slot) => slot.id === Number(id));
+
+    if (!existingBooking) {
+      alert("Booking not found");
+      navigate("/appointments");
+      return;
+    }
+
+    setAppointment({
+      patient: existingBooking.patient || "",
+      doctor: existingBooking.doctor || existingBooking.doctorId || "",
+      date: existingBooking.date || "",
+      time: existingBooking.time || "",
+      type: existingBooking.type || "Appointment",
+    });
+  }, [id, navigate]);
+
   const handleChange = (e) => {
     setAppointment({
       ...appointment,
@@ -29,22 +54,37 @@ function AppointmentForm() {
 
     const storedBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
 
-    const unavailable = bookedSlots.some(
-      (slot) =>
-        slot.doctor === appointment.doctor &&
-        slot.date === appointment.date &&
-        slot.time === appointment.time
-    );
-
     const alreadyBooked = storedBookings.some(
       (slot) =>
-        slot.doctor === appointment.doctor &&
+        slot.id !== Number(id) &&
+        (slot.doctor === appointment.doctor || slot.doctorId === Number(appointment.doctor)) &&
         slot.date === appointment.date &&
         slot.time === appointment.time
     );
 
-    if (unavailable || alreadyBooked) {
-      alert("Doctor session already booked");
+    if (alreadyBooked) {
+      alert("This doctor session is already booked for the selected time.");
+      return;
+    }
+
+    if (id) {
+      const updatedBookings = storedBookings.map((slot) =>
+        slot.id === Number(id)
+          ? {
+              ...slot,
+              patient: appointment.patient,
+              doctor: appointment.doctor,
+              date: appointment.date,
+              time: appointment.time,
+              type: appointment.type,
+              updatedAt: new Date().toISOString(),
+            }
+          : slot
+      );
+
+      localStorage.setItem("bookings", JSON.stringify(updatedBookings));
+      alert("Booking updated successfully");
+      navigate("/appointments");
       return;
     }
 
@@ -75,11 +115,13 @@ function AppointmentForm() {
 
         {/* Header */}
         <h2 className="text-3xl font-bold text-center text-gray-900 mb-2">
-          Book Appointment
+          {id ? "Edit Booking" : "Book Appointment"}
         </h2>
 
         <p className="text-center text-gray-500 mb-6">
-          Schedule your consultation with a doctor
+          {id
+            ? "Update your existing appointment details."
+            : "Schedule your consultation with a doctor."}
         </p>
 
         {/* Form */}
@@ -141,7 +183,7 @@ function AppointmentForm() {
             type="submit"
             className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition duration-300 shadow-md"
           >
-            Book Now
+            {id ? "Update Booking" : "Book Now"}
           </button>
         </form>
       </div>
