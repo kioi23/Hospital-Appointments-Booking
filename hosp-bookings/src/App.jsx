@@ -7,25 +7,28 @@ import BookingList from "./pages/BookingList";
 import BookingPage from "./components/bookingpage";
 import Register from "./components/Register";
 import Signing from "./components/signin";
+import { AppProvider } from "./context/AppContext";
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-[#f5f7ff]">
-        <Navbar />
+    <AppProvider>
+      <BrowserRouter>
+        <div className="min-h-screen bg-[#f5f7ff]">
+          <Navbar />
 
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/doctors" element={<Doctors />} />
-          <Route path="/appointment" element={<AppointmentForm />} />
-          <Route path="/appointment/edit/:id" element={<AppointmentForm />} />
-          <Route path="/appointments" element={<BookingList />} />
-          <Route path="/booking/:id" element={<BookingPage />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Signing />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/doctors" element={<Doctors />} />
+            <Route path="/appointment" element={<AppointmentForm />} />
+            <Route path="/appointment/edit/:id" element={<AppointmentForm />} />
+            <Route path="/appointments" element={<BookingList />} />
+            <Route path="/booking/:id" element={<BookingPage />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Signing />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </AppProvider>
   );
 }
 

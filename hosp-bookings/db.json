@@ -1,27 +1,45 @@
 {
-  "name": "hospital-bookings",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
-  },
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
-    "eslint": "^10.3.0",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
-    "globals": "^17.6.0",
-    "vite": "^8.0.12"
-  }
+  "doctors": [
+    {
+      "id": 1,
+      "name": "Dr. Sarah Johnson",
+      "specialty": "Cardiologist",
+      "bio": "Experienced heart specialist providing comprehensive cardiac care.",
+      "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2"
+    },
+    {
+      "id": 2,
+      "name": "Dr. Michael Lee",
+      "specialty": "Dermatologist",
+      "bio": "Skin care professional specializing in dermatology and cosmetic treatments.",
+      "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d"
+    },
+    {
+      "id": 3,
+      "name": "Dr. Emily Brown",
+      "specialty": "Neurologist",
+      "bio": "Neurology expert helping patients manage complex brain and nerve conditions.",
+      "image": "https://images.unsplash.com/photo-1594824476967-48c8b964273f"
+    }
+  ],
+  "bookings": [
+    {
+      "id": 1,
+      "patient": "John Doe",
+      "doctorId": 1,
+      "doctor": "Dr. Sarah Johnson",
+      "type": "Consultation",
+      "date": "2026-05-25",
+      "time": "10:00",
+      "createdAt": "2026-05-18T08:00:00.000Z"
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "name": "Admin User",
+      "email": "admin@example.com",
+      "password": "admin123"
+    }
+  ]
 }

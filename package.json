@@ -1,0 +1,10 @@
+{
+  "name": "hospital-bookings-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "cd hosp-bookings && npm run dev",
+    "build": "cd hosp-bookings && npm run build",
+    "preview": "cd hosp-bookings && npm run preview",
+    "lint": "cd hosp-bookings && npm run lint"
+  }
+}

@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
 
 function Home() {
+  const { doctors, bookings } = useAppContext();
   return (
     <div className="min-h-screen bg-[#f5f7ff]">
 
@@ -75,7 +77,7 @@ function Home() {
           <div className="flex gap-8 mt-12">
             <div>
               <h2 className="text-3xl font-bold text-blue-700">
-                100+
+                {doctors.length || 0}
               </h2>
               <p className="text-gray-600">
                 Doctors
@@ -93,10 +95,10 @@ function Home() {
 
             <div>
               <h2 className="text-3xl font-bold text-blue-700">
-                5K+
+                {bookings.length || 0}+
               </h2>
               <p className="text-gray-600">
-                Patients
+                Bookings
               </p>
             </div>
           </div>

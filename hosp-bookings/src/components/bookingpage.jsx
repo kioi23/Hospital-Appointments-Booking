@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
 
 function BookingPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { doctors, bookings, createBooking } = useAppContext();
 
   const [type, setType] = useState("");
   const [date, setDate] = useState("");
@@ -11,9 +14,7 @@ function BookingPage() {
   const handleBooking = async (e) => {
     e.preventDefault();
 
-    const storedBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
-
-    const alreadyBooked = storedBookings.some(
+    const alreadyBooked = bookings.some(
       (booking) =>
         booking.doctorId === Number(id) &&
         booking.date === date &&
@@ -25,38 +26,30 @@ function BookingPage() {
       return;
     }
 
+    const doctor = doctors.find((doctorItem) => doctorItem.id === Number(id));
     const bookingData = {
-      id: Date.now(),
+      patient: "",
       doctorId: Number(id),
+      doctor: doctor?.name || `Doctor ${id}`,
       type,
       date,
       time,
       createdAt: new Date().toISOString(),
     };
 
-    const updatedBookings = [...storedBookings, bookingData];
-    localStorage.setItem("bookings", JSON.stringify(updatedBookings));
-
     try {
-      const response = await fetch("/api/bookings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookingData),
-      });
-
-      if (!response.ok) {
-        console.warn("API booking failed, saved locally instead.");
-      }
+      await createBooking(bookingData);
     } catch (error) {
-      console.warn("Unable to reach API; booking saved locally.", error);
+      console.error(error);
+      alert("Unable to create booking. Try again later.");
+      return;
     }
 
     alert("Session successfully booked");
     setType("");
     setDate("");
     setTime("");
+    navigate("/appointments");
   };
 
   return (
@@ -73,9 +66,8 @@ function BookingPage() {
           Schedule your consultation session
         </p>
 
-        {/* Doctor ID info */}
         <div className="mb-6 bg-blue-50 text-blue-700 text-center py-3 rounded-xl font-semibold">
-          Doctor ID: {id}
+          Doctor: {doctor?.name || `Doctor ${id}`}
         </div>
 
         {/* Form */}

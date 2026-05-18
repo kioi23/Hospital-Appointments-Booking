@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
 
 function AppointmentForm() {
   const [appointment, setAppointment] = useState({
@@ -10,22 +11,24 @@ function AppointmentForm() {
     type: "Appointment",
   });
 
-  const bookedSlots = [
-    {
-      doctor: "Dr John",
-      date: "2026-05-20",
-      time: "10:00",
-    },
-  ];
-
   const { id } = useParams();
   const navigate = useNavigate();
+  const { bookings, createBooking, updateBooking, doctors } = useAppContext();
+  const patientRef = useRef(null);
+  const patientId = useId();
+  const doctorId = useId();
+  const dateId = useId();
+  const timeId = useId();
+  const typeId = useId();
 
   useEffect(() => {
-    if (!id) return;
+    patientRef.current?.focus();
+  }, []);
 
-    const storedBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
-    const existingBooking = storedBookings.find((slot) => slot.id === Number(id));
+  useEffect(() => {
+    if (!id || bookings.length === 0) return;
+
+    const existingBooking = bookings.find((slot) => slot.id === Number(id));
 
     if (!existingBooking) {
       alert("Booking not found");
@@ -35,29 +38,28 @@ function AppointmentForm() {
 
     setAppointment({
       patient: existingBooking.patient || "",
-      doctor: existingBooking.doctor || existingBooking.doctorId || "",
+      doctor: existingBooking.doctor || "",
       date: existingBooking.date || "",
       time: existingBooking.time || "",
       type: existingBooking.type || "Appointment",
     });
-  }, [id, navigate]);
+  }, [id, bookings, navigate]);
 
   const handleChange = (e) => {
-    setAppointment({
-      ...appointment,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setAppointment((current) => ({
+      ...current,
+      [name]: value,
+    }));
   };
 
-  const handleBooking = (e) => {
+  const handleBooking = async (e) => {
     e.preventDefault();
 
-    const storedBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
-
-    const alreadyBooked = storedBookings.some(
+    const alreadyBooked = bookings.some(
       (slot) =>
         slot.id !== Number(id) &&
-        (slot.doctor === appointment.doctor || slot.doctorId === Number(appointment.doctor)) &&
+        slot.doctor === appointment.doctor &&
         slot.date === appointment.date &&
         slot.time === appointment.time
     );
@@ -68,37 +70,21 @@ function AppointmentForm() {
     }
 
     if (id) {
-      const updatedBookings = storedBookings.map((slot) =>
-        slot.id === Number(id)
-          ? {
-              ...slot,
-              patient: appointment.patient,
-              doctor: appointment.doctor,
-              date: appointment.date,
-              time: appointment.time,
-              type: appointment.type,
-              updatedAt: new Date().toISOString(),
-            }
-          : slot
-      );
-
-      localStorage.setItem("bookings", JSON.stringify(updatedBookings));
+      await updateBooking(Number(id), {
+        ...appointment,
+        updatedAt: new Date().toISOString(),
+      });
       alert("Booking updated successfully");
       navigate("/appointments");
       return;
     }
 
-    const newBooking = {
-      id: Date.now(),
+    await createBooking({
       ...appointment,
       createdAt: new Date().toISOString(),
-    };
-
-    const updatedBookings = [...storedBookings, newBooking];
-    localStorage.setItem("bookings", JSON.stringify(updatedBookings));
+    });
 
     alert("Appointment booked successfully");
-
     setAppointment({
       patient: "",
       doctor: "",
@@ -129,28 +115,35 @@ function AppointmentForm() {
 
           {/* Patient Name */}
           <input
+            id={patientId}
             type="text"
             name="patient"
             placeholder="Patient Name"
             value={appointment.patient}
+            ref={patientRef}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           {/* Doctor Select */}
           <select
+            id={doctorId}
             name="doctor"
             value={appointment.doctor}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Doctor</option>
-            <option value="Dr John">Dr John</option>
-            <option value="Dr Sarah">Dr Sarah</option>
+            {(doctors || []).map((doctor) => (
+              <option key={doctor.id} value={doctor.name}>
+                {doctor.name}
+              </option>
+            ))}
           </select>
 
           {/* Date */}
           <input
+            id={dateId}
             type="date"
             name="date"
             value={appointment.date}
@@ -160,6 +153,7 @@ function AppointmentForm() {
 
           {/* Time */}
           <input
+            id={timeId}
             type="time"
             name="time"
             value={appointment.time}
@@ -169,6 +163,7 @@ function AppointmentForm() {
 
           {/* Type */}
           <select
+            id={typeId}
             name="type"
             value={appointment.type}
             onChange={handleChange}

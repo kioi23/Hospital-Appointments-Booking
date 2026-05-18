@@ -1,21 +1,18 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
 
 function BookingList() {
-  const [bookings, setBookings] = useState([]);
+  const { bookings, bookingsLoading, deleteBooking } = useAppContext();
 
-  useEffect(() => {
-    const storedBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
-    setBookings(storedBookings);
-  }, []);
-
-  const handleDelete = (bookingId) => {
+  const handleDelete = async (bookingId) => {
     const shouldDelete = window.confirm("Are you sure you want to delete this booking?");
     if (!shouldDelete) return;
 
-    const updatedBookings = bookings.filter((booking) => booking.id !== bookingId);
-    localStorage.setItem("bookings", JSON.stringify(updatedBookings));
-    setBookings(updatedBookings);
+    try {
+      await deleteBooking(bookingId);
+    } catch (error) {
+      alert("Unable to delete booking. Please try again.");
+    }
   };
 
   return (
@@ -38,7 +35,9 @@ function BookingList() {
           </Link>
         </div>
 
-        {bookings.length === 0 ? (
+        {bookingsLoading ? (
+          <div className="bg-white rounded-3xl shadow-lg p-10 text-center text-gray-600">Loading bookings...</div>
+        ) : bookings.length === 0 ? (
           <div className="bg-white rounded-3xl shadow-lg p-10 text-center">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">No bookings yet</h2>
             <p className="text-gray-600 mb-6">Create an appointment to see it listed here.</p>
@@ -57,11 +56,9 @@ function BookingList() {
                   <div>
                     <div className="text-sm text-gray-500">Booking ID: {booking.id}</div>
                     <h2 className="text-2xl font-bold text-gray-900 mt-2">
-                      {booking.patient ? booking.patient : `Doctor ${booking.doctorId || "N/A"}`}
+                      {booking.patient || booking.doctor || `Doctor ${booking.doctorId || "N/A"}`}
                     </h2>
-                    <p className="text-base text-gray-600 mt-2">
-                      Doctor: {booking.doctor || booking.doctorId || "Unknown"}
-                    </p>
+                    <p className="text-base text-gray-600 mt-2">Doctor: {booking.doctor || booking.doctorId || "Unknown"}</p>
                     <p className="text-base text-gray-600 mt-1">Type: {booking.type}</p>
                     <p className="text-base text-gray-600 mt-1">Date: {booking.date}</p>
                     <p className="text-base text-gray-600 mt-1">Time: {booking.time}</p>
